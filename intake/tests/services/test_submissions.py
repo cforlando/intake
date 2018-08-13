@@ -1,6 +1,7 @@
 import logging
 from unittest.mock import Mock, patch
 from django.test import TestCase
+from django.core.exceptions import ObjectDoesNotExist
 import intake.services.submissions as SubmissionsService
 from intake.tests import mock, factories
 from intake.tests.mock_org_answers import get_answers_for_orgs
@@ -426,3 +427,17 @@ class TestGetAllCnlSubmissions(TestCase):
             organizations=[sf_pubdef])
         cnl_subs = SubmissionsService.get_all_cnl_submissions(0)
         self.assertEqual(len(cnl_subs.object_list), 2)
+
+
+class TestDeleteSubmission(TestCase):
+
+    def test_can_delete_submission_with_associated_records(self):
+        submission_id = factories.FilledPDFFactory().submission_id
+
+        SubmissionsService.delete_submission(submission_id)
+
+        filled_pdfs = models.FilledPDF.objects.filter(submission_id=submission_id)
+        self.assertEqual(len(filled_pdfs), 0)
+
+        with self.assertRaises(ObjectDoesNotExist):
+            models.FormSubmission.objects.get(id=submission_id)

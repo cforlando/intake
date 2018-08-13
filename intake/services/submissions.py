@@ -33,6 +33,12 @@ def copy_answers_data_to_model_fields(submission):
             setattr(submission, component, existing)
 
 
+def delete_submission(submission_id):
+    submission = models.FormSubmission.objects.get(id=submission_id)
+    submission.applications.all().delete()
+    submission.delete()
+
+
 def create_submission(form, organizations, applicant_id):
     """Save the submission data
     """
