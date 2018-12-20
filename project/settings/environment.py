@@ -3,6 +3,8 @@ from project.settings.base import *
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
 DEFAULT_HOST = os.environ.get('DEFAULT_HOST', 'http://localhost:8000')
 
+ENVIRONMENT = os.environ.get('ENVIRONMENT', 'development')
+
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # Email settings
