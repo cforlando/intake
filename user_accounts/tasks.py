@@ -1,4 +1,4 @@
-from zappa.async import task
+from zappa.asynchronous import task
 
 
 @task

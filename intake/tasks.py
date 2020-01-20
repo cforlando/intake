@@ -1,7 +1,7 @@
 from django.core import mail
 from django.conf import settings
 from requests import request
-from zappa.async import task
+from zappa.asynchronous import task
 from project.services.mixpanel_service import get_mixpanel_client
 from project.services import logging_service
 
