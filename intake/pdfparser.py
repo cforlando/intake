@@ -3,6 +3,9 @@ import subprocess
 import json
 from tempfile import mkstemp
 
+from io import BytesIO
+from pdfrw import PdfFileReader, PdfFileWriter
+
 
 class PDFParserError(Exception):
     pass
@@ -112,14 +115,17 @@ class PDFParser:
         ])
 
     def join_pdfs(self, list_of_pdf_paths):
-        paths = [self._coerce_to_file_path(p) for p in list_of_pdf_paths]
-        output_path = self._write_tmp_file()
-        args = ['concat_files'] + paths + [output_path]
-        self.run_command(args)
-        result = self._get_file_contents(output_path)
+        pdf_writer = PdfFileWriter()
+        for path in list_of_pdf_paths:
+            pdf_reader = PdfFileReader(path)
+            for page in range(len(pdf_reader.pages)):
+                # Add each page to the writer object
+                pdf_writer.addPage(pdf_reader.getPage(page))
         if self.clean_up:
             self.clean_up_tmp_files()
-        return result
+        data = BytesIO()
+        pdf_writer.write(data)
+        return data.read()
 
     def get_field_data(self, pdf_file_path):
         pdf_file_path = self._coerce_to_file_path(pdf_file_path)
